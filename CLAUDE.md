@@ -61,3 +61,10 @@ Tüm tasarım ve front-end işleri [Impeccable](https://github.com/pbakaus/impec
 - Remote: `origin` → https://github.com/tugrulerbas/scrum-poker (varsayılan dal `main`).
 - Gönderme her zaman `/ship` (git-shipper) ile: istenmeyen dosya + gizli bilgi kontrolü, build, commit, push. Force push yok.
 - Kimlik: `gh auth login` (kullanıcı yapar). Agent'lar kimlik bilgisi istemez/girmez.
+
+## Deploy
+
+- Hedef: **Render** (render.yaml Blueprint, ücretsiz web servisi, Frankfurt). `main`'e her push otomatik deploy edilir.
+- Vercel uygun değil: uygulama sürekli açık bir Node + Socket.IO sunucusu ve bellekte oda state'i gerektirir; Vercel serverless WebSocket sunucusu çalıştırmaz.
+- Tek instance çalışmalı (oda state'i bellekte). Ücretsiz planda 15 dk hareketsizlikte uyur, ilk istek ~30-50 sn sürer; uyuyunca açık odalar silinir.
+- Sağlık kontrolü: `/healthz`. Proxy arkasında gerçek IP için `TRUST_PROXY=1`.

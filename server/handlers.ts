@@ -54,12 +54,20 @@ function scheduleAutoReveal(io: IO, room: Room): void {
   }, AUTO_REVEAL_GRACE_MS + 100).unref();
 }
 
+// Render gibi bir proxy arkasında gerçek istemci IP'si X-Forwarded-For'un ilk girdisidir.
+const TRUST_PROXY = process.env.TRUST_PROXY === '1';
+function clientIp(handshake: { address: string; headers: Record<string, string | string[] | undefined> }): string {
+  const fwd = handshake.headers['x-forwarded-for'];
+  const first = (Array.isArray(fwd) ? fwd[0] : fwd)?.split(',')[0]?.trim();
+  return (TRUST_PROXY && first) || handshake.address;
+}
+
 const createLimit = createLimiter(RATE_CREATE_MAX, RATE_WINDOW_MS);
 const joinLimit = createLimiter(RATE_JOIN_MAX, RATE_WINDOW_MS);
 
 export function registerHandlers(io: IO): void {
   io.on('connection', (socket) => {
-    const ip = socket.handshake.address;
+    const ip = clientIp(socket.handshake);
     const limited = (limit: ReturnType<typeof createLimiter>) => !limit(socket.id) || !limit(`ip:${ip}`);
 
     const detach = () => {

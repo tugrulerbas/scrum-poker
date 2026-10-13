@@ -14,6 +14,10 @@ const isProd = process.env.NODE_ENV === 'production';
 let handle: Middleware = (_req, _res, next) => next();
 
 const httpServer = createServer((req, res) => {
+  if (req.url === '/healthz') {
+    res.end('ok');
+    return;
+  }
   handle(req, res, () => {
     res.statusCode = 404;
     res.end('Not found');
