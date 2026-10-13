@@ -81,7 +81,7 @@ Server→client:
 
 ### Temel kurallar
 - **Oy hakkı:** tur `voting` iken odadaki herkes; reveal sonrası katılan o turu yalnızca izler (zaten voting yok), sonraki turdan itibaren oy verir.
-- **Otomatik açılış:** her `vote:cast` ve her bağlantı kopmasında kontrol: çevrimiçi katılımcıların tamamı oy vermiş ve ≥1 oy varsa reveal. Çevrimdışılar beklenmez; oyları korunur.
+- **Açılış yalnızca manuel:** `round:reveal` (facilitator). Otomatik açılış kaldırıldı (2026-10-14): tek kişilik odada ilk oy turu açıp oyu kilitliyor, sonradan katılanları oy veremez halde bırakıyordu.
 - **Eşzamanlılık:** Node tek thread → event'ler sıralı. `reveal`/`revote`/`vote:cast` `roundId` taşır; güncel tur değilse `STALE_ROUND` ile yok sayılır → çift tıklama tek sonuç.
 - **Revote / story:next / story:activate:** yeni `Round` (id+1, votes boş), `timer=null`.
 - **Mola:** reveal anında tüm oylar ☕ ise (≥1 oy) `breakState={endsAt: now+5dk}`; süre dolunca veya `break:end` ile kapanır ve aynı story'de yeni tur açılır.

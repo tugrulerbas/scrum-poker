@@ -6,10 +6,12 @@ import { CardFace } from './Icon.tsx';
 interface Props {
   selected: Card | null;
   disabled: boolean;
+  /** Deste kilitliyken gösterilecek açıklama. */
+  lockedHint?: string;
   onSelect: (card: Card | null) => void;
 }
 
-export default function Deck({ selected, disabled, onSelect }: Props) {
+export default function Deck({ selected, disabled, lockedHint, onSelect }: Props) {
   const refs = useRef<(HTMLButtonElement | null)[]>([]);
   const focusIndex = Math.max(0, selected ? DECK.indexOf(selected) : 0);
 
@@ -25,6 +27,7 @@ export default function Deck({ selected, disabled, onSelect }: Props) {
       <div className="deck-head">
         <h2 id="deck-title" className="section-title">Kartını seç</h2>
         {selected && !disabled && <span className="muted">Oyun gizli, değiştirebilirsin.</span>}
+        {disabled && lockedHint && <span className="muted">{lockedHint}</span>}
       </div>
       <div className="deck" role="radiogroup" aria-labelledby="deck-title">
         {DECK.map((card, i) => {

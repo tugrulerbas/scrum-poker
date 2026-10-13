@@ -1,5 +1,5 @@
 import type { Server, Socket } from 'socket.io';
-import { AUTO_REVEAL_GRACE_MS, FACILITATOR_GRACE_MS, RATE_CREATE_MAX, RATE_JOIN_MAX, RATE_WINDOW_MS } from '../shared/constants.ts';
+import { FACILITATOR_GRACE_MS, RATE_CREATE_MAX, RATE_JOIN_MAX, RATE_WINDOW_MS } from '../shared/constants.ts';
 import type { AckError, ClientToServerEvents, ErrorCode, ServerToClientEvents, SocketData } from '../shared/types.ts';
 import * as logic from './room-logic.ts';
 import { rooms, roomsFull, type Participant, type Room } from './rooms.ts';
@@ -46,13 +46,6 @@ function scheduleFacilitatorCheck(io: IO, room: Room): void {
   }, FACILITATOR_GRACE_MS + 100).unref();
 }
 
-function scheduleAutoReveal(io: IO, room: Room): void {
-  const roundId = room.round.id;
-  setTimeout(() => {
-    if (rooms.get(room.id) !== room || room.round.id !== roundId) return;
-    if (logic.maybeAutoReveal(room)) broadcastRoom(io, room);
-  }, AUTO_REVEAL_GRACE_MS + 100).unref();
-}
 
 // Render gibi bir proxy arkasında gerçek istemci IP'si X-Forwarded-For'un ilk girdisidir.
 const TRUST_PROXY = process.env.TRUST_PROXY === '1';
@@ -79,7 +72,6 @@ export function registerHandlers(io: IO): void {
       const wentOffline = logic.detachSocket(room, participantId, socket.id);
       if (wentOffline) {
         if (room.facilitatorId === participantId) scheduleFacilitatorCheck(io, room);
-        if (!logic.maybeAutoReveal(room)) scheduleAutoReveal(io, room);
       }
       broadcastRoom(io, room);
     };

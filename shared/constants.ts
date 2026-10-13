@@ -10,8 +10,6 @@ export const MAX_ROOMS = 5000;
 export const MAX_PARTICIPANTS = 20;
 export const OFFLINE_REMOVE_MS = 15 * 60 * 1000;
 export const FACILITATOR_GRACE_MS = 30 * 1000;
-/** Oy vermemiş biri koptuğunda otomatik açılış bu kadar bekler (sayfa yenileme/kısa kopma payı). */
-export const AUTO_REVEAL_GRACE_MS = 8 * 1000;
 
 export const RATE_WINDOW_MS = 60 * 1000;
 export const RATE_CREATE_MAX = 5;

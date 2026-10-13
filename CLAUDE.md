@@ -64,6 +64,7 @@ Tüm tasarım ve front-end işleri [Impeccable](https://github.com/pbakaus/impec
 
 ## Deploy
 
+- Canlı adres: https://scrum-poker-lqtk.onrender.com
 - Hedef: **Render** (render.yaml Blueprint, ücretsiz web servisi, Frankfurt). `main`'e her push otomatik deploy edilir.
 - Vercel uygun değil: uygulama sürekli açık bir Node + Socket.IO sunucusu ve bellekte oda state'i gerektirir; Vercel serverless WebSocket sunucusu çalıştırmaz.
 - Tek instance çalışmalı (oda state'i bellekte). Ücretsiz planda 15 dk hareketsizlikte uyur, ilk istek ~30-50 sn sürer; uyuyunca açık odalar silinir.

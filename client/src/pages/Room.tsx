@@ -211,7 +211,12 @@ export default function Room({ roomId, navigate, justCreated }: Props) {
                 !revealed && <p className="muted hint">Facilitator kartları açınca sonuçlar görünür.</p>
               )}
               {revealed && <Results view={view} isFacilitator={isF} disabled={offline} onSave={savePoints} />}
-              <Deck selected={myVote} disabled={revealed || offline} onSelect={vote} />
+              <Deck
+                selected={myVote}
+                disabled={revealed || offline}
+                lockedHint={revealed ? (isF ? 'Yeni tur için "Yeniden oyla"ya bas.' : 'Kartlar açıldı. Yeni turda oy verebilirsin.') : undefined}
+                onSelect={vote}
+              />
             </>
           )}
         </main>

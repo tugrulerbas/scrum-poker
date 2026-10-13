@@ -74,12 +74,11 @@ Varsayılan deste: Fibonacci (0, 1, 2, 3, 5, 8, 13, 21, ?, ☕).
 - [ ] Oy açılmadan önce diğer kişiler yalnızca "oy verdi / bekleniyor" durumunu görür, kart değerini görmez.
 - [ ] Oy ilerlemesi gösterilir (örn. "4/6 oy verdi").
 - [ ] Açılmadan önce kişi oyunu değiştirebilir veya geri çekebilir.
-- [ ] Herkes oy verdiğinde kartlar otomatik açılır; facilitator ayrıca "Kartları aç" ile istediği an açabilir.
+- [ ] Kartlar yalnızca facilitator "Kartları aç" dediğinde açılır (otomatik açılış yok — tek kişilik odada ilk oyda turu kilitliyordu). Açılana kadar herkes oyunu değiştirebilir; sonradan katılan da oy verebilir.
 - [ ] Açıldıktan sonra oylar değişmez; yalnızca facilitator "Yeniden oyla" ile yeni tur başlatır ve tüm oylar temizlenir.
 - [ ] Yalnızca facilitator açma ve yeniden oylama aksiyonlarını görür/kullanır.
 
 **Edge case'ler**
-- Oy vermemiş biri çevrimdışıysa "herkes oy verdi" otomatik açılışı çevrimdışıları bekletmez.
 - Hiç oy yokken "Kartları aç" pasiftir (veya uyarır).
 - Oy verdikten sonra bağlantısı kopan kişinin oyu geri geldiğinde korunur.
 - İki kişi aynı anda açma/yeniden oyla tıklarsa tek bir tutarlı sonuç oluşur.

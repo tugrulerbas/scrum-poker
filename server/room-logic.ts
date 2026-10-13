@@ -1,4 +1,4 @@
-import { AUTO_REVEAL_GRACE_MS, FACILITATOR_GRACE_MS, MAX_PARTICIPANTS, MAX_STORIES, NAME_MAX } from '../shared/constants.ts';
+import { FACILITATOR_GRACE_MS, MAX_PARTICIPANTS, MAX_STORIES, NAME_MAX } from '../shared/constants.ts';
 import type { AckError, Card, ErrorCode } from '../shared/types.ts';
 import { isOnline, newRoomId, newToken, randomId, rooms, tokenMatches, type Participant, type Room } from './rooms.ts';
 import { checkName, checkStory } from './validate.ts';
@@ -104,18 +104,6 @@ export function ensureFacilitator(room: Room, now = Date.now()): Participant | n
   return next;
 }
 
-/** Çevrimiçi (ya da yeni kopmuş, grace içindeki) herkes oy verdiyse ve ≥1 oy varsa açar. */
-export function maybeAutoReveal(room: Room, now = Date.now()): boolean {
-  const { round } = room;
-  if (round.status !== 'voting' || round.votes.size === 0) return false;
-  for (const p of room.participants.values()) {
-    const pending = isOnline(p) || (p.offlineSince !== null && now - p.offlineSince < AUTO_REVEAL_GRACE_MS);
-    if (pending && !round.votes.has(p.id)) return false;
-  }
-  reveal(room);
-  return true;
-}
-
 function reveal(room: Room): void {
   room.round.status = 'revealed';
   room.round.revealedAt = Date.now();
@@ -129,7 +117,6 @@ export function castVote(room: Room, pid: string, roundId: number, card: Card | 
   if (card === null) room.round.votes.delete(pid);
   else room.round.votes.set(pid, card);
   touch(room);
-  maybeAutoReveal(room);
   return { ok: true };
 }
 
