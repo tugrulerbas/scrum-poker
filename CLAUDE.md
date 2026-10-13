@@ -32,7 +32,8 @@ Her aşamanın bir subagent'ı (`.claude/agents/`) ve bir komutu (`.claude/comma
 | 6 | Front-end yazma (Impeccable `craft-floor` + `polish` + `detect`) | `/frontend <slug>` | frontend-dev | **Opus 5.5** | `src/` UI + CSS |
 | 7 | Kod inceleme | `/review <slug>` | code-reviewer | **Opus 5.5** | `docs/harness/reviews/<slug>.md` |
 | 8 | Kodu revize etme | `/revise <slug>` | reviser | Sonnet 5.5 | `src/` düzeltmeleri |
-| ★ | Yeni feature (uçtan uca) | `/feature <fikir>` | hepsi sırayla | — | 2→8 |
+| 9 | GitHub'a gönderme | `/ship [mesaj]` · `/ship pr <slug>` | git-shipper | Sonnet 5.5 | commit + push (+ PR) |
+| ★ | Yeni feature (uçtan uca) | `/feature <fikir>` | hepsi sırayla | — | 2→8, sonunda `/ship` önerilir |
 
 `<slug>`: kebab-case feature adı (ör. `room-create`). Tüm aşamalar aynı slug'ı kullanır.
 
@@ -54,3 +55,9 @@ Tüm tasarım ve front-end işleri [Impeccable](https://github.com/pbakaus/impec
 - Mevcut kod stiline uy (kod oluştuktan sonra), Türkçe UI metinleri, yorum yoğunluğu az. Gereksiz kütüphane ekleme.
 - Yeni npm bağımlılığı eklemek gerekiyorsa analizde gerekçesiyle belirt; implementer onaysız eklemez.
 - Kapsam dışına çıkma: spec'te olmayan şeyi yapma, gördüğün ayrı sorunları dokümanın "Notlar" kısmına yaz.
+
+## Git / GitHub
+
+- Remote: `origin` → https://github.com/tugrulerbas/scrum-poker (varsayılan dal `main`).
+- Gönderme her zaman `/ship` (git-shipper) ile: istenmeyen dosya + gizli bilgi kontrolü, build, commit, push. Force push yok.
+- Kimlik: `gh auth login` (kullanıcı yapar). Agent'lar kimlik bilgisi istemez/girmez.

@@ -20,4 +20,4 @@ Aşağıdaki aşamaları **sırayla** çalıştır. Her aşama ilgili subagent i
 Kurallar:
 - Test aşaması yok; hiçbir agent'a test yazdırma.
 - Build hatası bir aşamada çözülemezse dur ve raporla.
-- Sonunda kısa bir özet ver: slug, değişen dosyalar, atlanan aşamalar, kalan açık noktalar.
+- Sonunda kısa bir özet ver: slug, değişen dosyalar, atlanan aşamalar, kalan açık noktalar. Otomatik pushlama; kullanıcıya `/ship` veya `/ship pr <slug>` öner.
