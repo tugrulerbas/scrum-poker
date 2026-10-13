@@ -15,7 +15,8 @@ let handle: Middleware = (_req, _res, next) => next();
 
 const httpServer = createServer((req, res) => {
   if (req.url === '/healthz') {
-    res.end('ok');
+    // Render deploy edilen commit'i RENDER_GIT_COMMIT ile verir; canlı sürümü doğrulamak için.
+    res.end(`ok ${process.env.RENDER_GIT_COMMIT?.slice(0, 7) ?? 'local'}`);
     return;
   }
   handle(req, res, () => {
