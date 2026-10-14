@@ -65,7 +65,7 @@ function toItems(data: unknown): GifItem[] {
 
 async function fetchGifs(q: string): Promise<Result> {
   if (!upstreamLimit('giphy')) return 'UNAVAILABLE';
-  const params = new URLSearchParams({ api_key: KEY, limit: String(GIF_RESULTS), rating: 'g', bundle: 'messaging_non_clips' });
+  const params = new URLSearchParams({ api_key: KEY, limit: String(GIF_RESULTS), rating: 'g' });
   if (q) {
     params.set('q', q);
     params.set('lang', 'tr');
