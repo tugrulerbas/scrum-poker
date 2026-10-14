@@ -20,7 +20,7 @@ export const RATE_GIF_SEARCH_IP_MAX = 60;
 
 export const GIF_SHOW_MS = 4000;
 export const GIF_LOAD_TIMEOUT_MS = 5000;
-export const GIF_COOLDOWN_MS = 10_000;
+export const GIF_COOLDOWN_MS = 3_000;
 export const GIF_QUERY_MAX = 50;
 export const GIF_RESULTS = 24;
 export const GIF_SEARCH_DEBOUNCE_MS = 350;
