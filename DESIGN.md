@@ -187,6 +187,8 @@ Hibrit: zemin ve masa tonal katmanla (cream-bg → surface-2 → surface) ayrıl
 
 Yumuşak ama gevşek değil: inputlar ve çip butonlar 8px, kartlar/koltuklar/menüler 14px, paneller ve masa 22px, butonlar ve durum çipleri hap (999px). Çerçeveler 1px (panel) veya 2px (input, kart, seçim); seçili/sen durumunda çerçeve mora döner. Renkli tek taraflı kalın kenar çizgisi kullanılmaz.
 
+İç öğeler (ör. koltuk içindeki overlay) için iç yarıçap = dış yarıçap − çerçeve kalınlığı (ör. 14px − 2px); ölçek dışı görünür ama kasıtlıdır.
+
 ## Components
 
 ### Buttons

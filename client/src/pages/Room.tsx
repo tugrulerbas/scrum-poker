@@ -6,6 +6,8 @@ import ConnectionBanner, { useConnection } from '../components/ConnectionBanner.
 import Deck from '../components/Deck.tsx';
 import ErrorScreen from '../components/ErrorScreen.tsx';
 import FacilitatorControls from '../components/FacilitatorControls.tsx';
+import GifSender from '../components/GifSender.tsx';
+import GifToggle from '../components/GifToggle.tsx';
 import Icon from '../components/Icon.tsx';
 import Logo from '../components/Logo.tsx';
 import NameForm from '../components/NameForm.tsx';
@@ -18,21 +20,11 @@ import Table from '../components/Table.tsx';
 import ThemeToggle from '../components/ThemeToggle.tsx';
 import VoteProgress from '../components/VoteProgress.tsx';
 import { useToast } from '../toasts.tsx';
+import { useGifs } from '../useGifs.ts';
+import { useMediaQuery } from '../useMediaQuery.ts';
 import { useRoom } from '../useRoom.ts';
 
 const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
-
-function useMediaQuery(query: string) {
-  const [matches, setMatches] = useState(() => window.matchMedia(query).matches);
-  useEffect(() => {
-    const mq = window.matchMedia(query);
-    const onChange = () => setMatches(mq.matches);
-    onChange();
-    mq.addEventListener('change', onChange);
-    return () => mq.removeEventListener('change', onChange);
-  }, [query]);
-  return matches;
-}
 
 interface Props {
   roomId: string;
@@ -43,6 +35,8 @@ interface Props {
 export default function Room({ roomId, navigate, justCreated }: Props) {
   const { status, setStatus, view, myVote, join, vote, act } = useRoom(roomId);
   const connection = useConnection();
+  const gifs = useGifs(view);
+  const reducedMotion = useMediaQuery('(prefers-reduced-motion: reduce)');
   const toast = useToast();
   const [dialog, confirm] = useConfirm();
   const [sheetOpen, setSheetOpen] = useState(false);
@@ -182,6 +176,7 @@ export default function Room({ roomId, navigate, justCreated }: Props) {
         <ShareLink roomId={view.id} highlight={justCreated} />
         <div className="topbar-end">
           <ThemeToggle />
+          <GifToggle muted={gifs.muted} onChange={gifs.setMuted} />
         </div>
       </header>
       <ConnectionBanner connection={connection} />
@@ -197,7 +192,15 @@ export default function Room({ roomId, navigate, justCreated }: Props) {
             <StorySummary view={view} isFacilitator={isF} onAdd={storyActions.add} />
           ) : (
             <>
-              <Table view={view} />
+              <Table
+                view={view}
+                gifs={gifs.active}
+                onGifDone={gifs.dismiss}
+                reducedMotion={reducedMotion}
+                gifSlot={
+                  <GifSender cooldownUntil={gifs.cooldownUntil} offline={offline} reducedMotion={reducedMotion} onSend={gifs.send} />
+                }
+              />
               <VoteProgress view={view} />
               {isF ? (
                 <FacilitatorControls

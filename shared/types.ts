@@ -48,6 +48,7 @@ export type ErrorCode =
   | 'TOO_MANY_STORIES'
   | 'INVALID_INPUT'
   | 'SERVER_BUSY'
+  | 'RATE_LIMITED'
   | 'TIMEOUT';
 
 export type AckError = {
@@ -80,15 +81,23 @@ export interface ClientToServerEvents {
   'story:activate': (p: { storyId: string }, ack: AckFn) => void;
   'story:setPoints': (p: { storyId: string; card: Card }, ack: AckFn) => void;
   'story:next': (p: {}, ack: AckFn) => void;
+  'gif:send': (p: { url: string }, ack: AckFn) => void;
 }
 
 export type Notice =
   | { code: 'ACTIVE_STORY_DELETED' }
   | { code: 'FACILITATOR_CHANGED'; facilitatorId: string; name: string };
 
+export interface GifEvent {
+  id: string;
+  fromId: string;
+  url: string;
+}
+
 export interface ServerToClientEvents {
   'room:state': (view: RoomView) => void;
   notice: (n: Notice) => void;
+  gif: (g: GifEvent) => void;
 }
 
 export interface SocketData {

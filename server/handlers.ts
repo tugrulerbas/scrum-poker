@@ -1,5 +1,13 @@
 import type { Server, Socket } from 'socket.io';
-import { FACILITATOR_GRACE_MS, RATE_CREATE_MAX, RATE_JOIN_MAX, RATE_WINDOW_MS } from '../shared/constants.ts';
+import {
+  FACILITATOR_GRACE_MS,
+  GIF_COOLDOWN_MS,
+  RATE_CREATE_MAX,
+  RATE_GIF_ROOM_MAX,
+  RATE_JOIN_MAX,
+  RATE_WINDOW_MS,
+} from '../shared/constants.ts';
+import { checkGifUrl } from '../shared/gif.ts';
 import type { AckError, ClientToServerEvents, ErrorCode, ServerToClientEvents, SocketData } from '../shared/types.ts';
 import * as logic from './room-logic.ts';
 import { rooms, roomsFull, type Participant, type Room } from './rooms.ts';
@@ -57,6 +65,9 @@ function clientIp(handshake: { address: string; headers: Record<string, string |
 
 const createLimit = createLimiter(RATE_CREATE_MAX, RATE_WINDOW_MS);
 const joinLimit = createLimiter(RATE_JOIN_MAX, RATE_WINDOW_MS);
+const gifUserLimit = createLimiter(1, GIF_COOLDOWN_MS);
+const gifRoomLimit = createLimiter(RATE_GIF_ROOM_MAX, RATE_WINDOW_MS);
+let gifSeq = 0;
 
 export function registerHandlers(io: IO): void {
   io.on('connection', (socket) => {
@@ -191,6 +202,21 @@ export function registerHandlers(io: IO): void {
     );
 
     inRoom<{}>('story:next', (room, pid) => logic.nextStory(room, pid));
+
+    // Geçici olay: state değişmez, room:state yayını yapılmaz.
+    socket.on('gif:send', (payload: unknown, ack: unknown) => {
+      if (typeof ack !== 'function') return;
+      const reply = ack as AnyAck;
+      const { roomId, participantId: pid } = socket.data;
+      const room = roomId ? rooms.get(roomId) : undefined;
+      if (!room || !pid || !room.participants.has(pid)) return reply(fail('NOT_IN_ROOM'));
+      const check = checkGifUrl(isObject(payload) ? payload.url : undefined);
+      if (!check.ok) return reply(fail('INVALID_INPUT'));
+      if (!gifUserLimit(`${room.id}:${pid}`) || !gifRoomLimit(room.id)) return reply(fail('RATE_LIMITED'));
+      const gif = { id: String(++gifSeq), fromId: pid, url: check.url };
+      for (const p of room.participants.values()) emitToParticipant(io, p, (s) => s.emit('gif', gif));
+      reply({ ok: true });
+    });
 
     socket.on('disconnect', detach);
   });

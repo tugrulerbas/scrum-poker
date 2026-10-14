@@ -1,8 +1,19 @@
+import type { ReactNode } from 'react';
 import type { RoomView } from '../../../shared/types.ts';
+import type { ActiveGif } from '../useGifs.ts';
 import Avatar from './Avatar.tsx';
+import GifOverlay from './GifOverlay.tsx';
 import Icon, { CardFace, type IconName } from './Icon.tsx';
 
-export default function Table({ view }: { view: RoomView }) {
+interface Props {
+  view: RoomView;
+  gifs: Record<string, ActiveGif>;
+  onGifDone: (fromId: string, id: string) => void;
+  reducedMotion: boolean;
+  gifSlot?: ReactNode;
+}
+
+export default function Table({ view, gifs, onGifDone, reducedMotion, gifSlot }: Props) {
   const revealed = view.round.status === 'revealed';
   return (
     <ul className="table" aria-label="Masa">
@@ -16,8 +27,13 @@ export default function Table({ view }: { view: RoomView }) {
         if (!p.online) [state, chip, icon] = ['offline', 'Çevrimdışı', 'offline'];
         else if (p.hasVoted) [state, chip, icon] = ['voted', 'Oy verdi', 'check'];
         else [state, chip, icon] = ['waiting', 'Bekleniyor', 'clock'];
+        const gif = p.online ? gifs[p.id] : undefined;
         return (
           <li key={p.id} className={`seat seat-${state}${isYou ? ' seat-you' : ''}`}>
+            {gif && (
+              <GifOverlay key={gif.id} gif={gif} reducedMotion={reducedMotion} onDone={() => onGifDone(p.id, gif.id)} />
+            )}
+            {isYou && gifSlot}
             <div className="seat-card" aria-hidden={!revealed && !p.hasVoted}>
               {revealed ? (
                 <span className={`seat-value${vote ? '' : ' none'}`}>{vote ? <CardFace card={vote} /> : '—'}</span>
