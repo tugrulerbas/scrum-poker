@@ -10,9 +10,9 @@ web
 
 ## Users
 
-- **Facilitator** (genelde Scrum Master / takım lideri): planning toplantısını yönetir; oda kurar, linki paylaşır, story ekler, kartları açar, final puanı kaydeder.
+- **Owner** (kodda `facilitator`; genelde Scrum Master / takım lideri): planning toplantısını yönetir; oda kurar, linki paylaşır, story ekler, kartları açar, final puanı kaydeder.
 - **Katılımcılar** (geliştirici, test, ürün): linke tıklayıp yalnızca isimle girer, gizlice kart seçer.
-- Durum: canlı planning toplantısı, çoğunlukla video call sırasında; facilitator ekranını paylaşıyor olabilir. Masaüstü ağırlıklı, telefondan katılan da var.
+- Durum: canlı planning toplantısı, çoğunlukla video call sırasında; Owner ekranını paylaşıyor olabilir. Masaüstü ağırlıklı, telefondan katılan da var.
 - Ekip büyüklüğü: oda başına en fazla 20 kişi (spec varsayımı; tipik ekip boyutu doğrulanmadı).
 
 ## Product Purpose
@@ -21,7 +21,7 @@ Scrum ekiplerinin story point tahminini hesapsız, tek linkle ve çapa etkisi ol
 
 ## Positioning
 
-Jira eklentilerinden daha samimi ve eğlenceli (oyun kartı masası, sıcak ton, "sen" dili), ama işi hızlı gören bir araç: hesap yok, kurulum yok, link + isim yeterli. Eğlence toplantıyı yavaşlatmaz.
+Jira eklentilerinden daha samimi ve eğlenceli (oyun kartı masası, ebru sırtlı kartlar, "sen" dili), ama işi hızlı gören bir araç: hesap yok, kurulum yok, link + isim yeterli. Eğlence toplantıyı yavaşlatmaz.
 
 ## Operating Context
 
@@ -35,13 +35,13 @@ Jira eklentilerinden daha samimi ve eğlenceli (oyun kartı masası, sıcak ton,
 - Deste: Fibonacci 0, 1, 2, 3, 5, 8, 13, 21, ?, ☕ (sabit; özel deste yok).
 - Kalıcılık yok; odalar bellekte, süresi dolunca silinir. Hesap, e-posta, giriş yok.
 - Sıradaki eğlenceli feature'lar (analiz edildi, henüz yok): kart çevirme animasyonu, fikir birliği konfetisi, emoji tepkileri, avatar seçimi, kahve molası ekranı, zamanlayıcı/dürtme.
-- Terimler: "facilitator", "story", "oda", "masa", "deste", "Kartları aç", "Yeniden oyla", "Fikir birliği".
+- Terimler: "Owner" (arayüz; kodda "facilitator"), "story", "oda", "masa", "deste", "Kartları aç", "Yeniden oyla", "Fikir birliği".
 - Açık kararlar: facilitator devri kuralı, oda ömrü, gözlemci rolü (spec "Açık sorular").
 
 ## Brand Commitments
 
 - Ad: "Mimeda Scrum Poker" (Mimeda ekibinin iç aracı; logo Mimeda logosu). Arayüz dili Türkçe, samimi "sen" hitabı.
-- Oyun kartı / masa metaforu ürünün kimliği (spec ve tasarım dokümanında yerleşik).
+- Oyun kartı / masa metaforu ürünün kimliği (spec ve tasarım dokümanında yerleşik). Görsel dünya "Ebru Masa": serin çivit masa, gizli oy ebru sırtlı kartla gösterilir (DESIGN.md). Samimiyet zemin renginden değil, ebru'nun kök boya/safranından ve "sen" dilinden gelir.
 
 ## Evidence on Hand
 

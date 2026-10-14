@@ -62,7 +62,7 @@ export default function NameForm({ title, subtitle, submitLabel, loadingLabel, o
           id={id}
           className="input"
           value={name}
-          placeholder="Örn. Ayşe"
+          placeholder="Örn. Tuğrul"
           autoComplete="nickname"
           autoFocus
           aria-invalid={!!shownError}

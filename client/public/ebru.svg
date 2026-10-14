@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="320" height="320" viewBox="0 0 320 320">
+<defs>
+<filter id="tarak" x="-20%" y="-20%" width="140%" height="140%" color-interpolation-filters="sRGB">
+<feTurbulence type="fractalNoise" baseFrequency="0.006 0.014" numOctaves="1" seed="5" result="a"/>
+<feDisplacementMap in="SourceGraphic" in2="a" scale="96" xChannelSelector="R" yChannelSelector="G" result="d1"/>
+<feTurbulence type="fractalNoise" baseFrequency="0.018 0.004" numOctaves="1" seed="12" result="b"/>
+<feDisplacementMap in="d1" in2="b" scale="24" xChannelSelector="G" yChannelSelector="R"/>
+<feGaussianBlur stdDeviation=".8"/>
+</filter>
+</defs>
+<rect width="320" height="320" fill="#1E2A66"/>
+<g filter="url(#tarak)">
+<circle cx="70" cy="80" r="170.0" fill="none" stroke="#F4F5F8" stroke-width="2.6"/>
+<circle cx="70" cy="80" r="160.4" fill="none" stroke="#B8323A" stroke-width="4.5"/>
+<circle cx="70" cy="80" r="145.9" fill="none" stroke="#3346A3" stroke-width="7"/>
+<circle cx="70" cy="80" r="125.9" fill="none" stroke="#E0A526" stroke-width="2.2"/>
+<circle cx="70" cy="80" r="116.7" fill="none" stroke="#F4F5F8" stroke-width="2.6"/>
+<circle cx="70" cy="80" r="104.1" fill="none" stroke="#B8323A" stroke-width="4.5"/>
+<circle cx="70" cy="80" r="86.6" fill="none" stroke="#141C4C" stroke-width="9"/>
+<circle cx="70" cy="80" r="70.6" fill="none" stroke="#F4F5F8" stroke-width="2.6"/>
+<circle cx="70" cy="80" r="58.0" fill="none" stroke="#3346A3" stroke-width="7"/>
+<circle cx="70" cy="80" r="38.0" fill="none" stroke="#B8323A" stroke-width="4.5"/>
+<circle cx="70" cy="80" r="26.5" fill="none" stroke="#E0A526" stroke-width="2.2"/>
+<circle cx="70" cy="80" r="14.3" fill="none" stroke="#F4F5F8" stroke-width="2.6"/>
+<circle cx="260" cy="70" r="130.0" fill="none" stroke="#B8323A" stroke-width="4.5"/>
+<circle cx="260" cy="70" r="115.5" fill="none" stroke="#3346A3" stroke-width="7"/>
+<circle cx="260" cy="70" r="95.5" fill="none" stroke="#E0A526" stroke-width="2.2"/>
+<circle cx="260" cy="70" r="86.3" fill="none" stroke="#F4F5F8" stroke-width="2.6"/>
+<circle cx="260" cy="70" r="73.7" fill="none" stroke="#B8323A" stroke-width="4.5"/>
+<circle cx="260" cy="70" r="56.2" fill="none" stroke="#141C4C" stroke-width="9"/>
+<circle cx="260" cy="70" r="40.2" fill="none" stroke="#F4F5F8" stroke-width="2.6"/>
+<circle cx="260" cy="70" r="27.6" fill="none" stroke="#3346A3" stroke-width="7"/>
+<circle cx="260" cy="70" r="7.6" fill="none" stroke="#B8323A" stroke-width="4.5"/>
+<circle cx="170" cy="250" r="170.0" fill="none" stroke="#3346A3" stroke-width="7"/>
+<circle cx="170" cy="250" r="150.0" fill="none" stroke="#E0A526" stroke-width="2.2"/>
+<circle cx="170" cy="250" r="140.8" fill="none" stroke="#F4F5F8" stroke-width="2.6"/>
+<circle cx="170" cy="250" r="128.2" fill="none" stroke="#B8323A" stroke-width="4.5"/>
+<circle cx="170" cy="250" r="110.7" fill="none" stroke="#141C4C" stroke-width="9"/>
+<circle cx="170" cy="250" r="94.7" fill="none" stroke="#F4F5F8" stroke-width="2.6"/>
+<circle cx="170" cy="250" r="82.1" fill="none" stroke="#3346A3" stroke-width="7"/>
+<circle cx="170" cy="250" r="62.1" fill="none" stroke="#B8323A" stroke-width="4.5"/>
+<circle cx="170" cy="250" r="50.6" fill="none" stroke="#E0A526" stroke-width="2.2"/>
+<circle cx="170" cy="250" r="38.4" fill="none" stroke="#F4F5F8" stroke-width="2.6"/>
+<circle cx="170" cy="250" r="22.8" fill="none" stroke="#B8323A" stroke-width="4.5"/>
+<circle cx="170" cy="250" r="11.3" fill="none" stroke="#3346A3" stroke-width="7"/>
+<circle cx="310" cy="250" r="120.0" fill="none" stroke="#E0A526" stroke-width="2.2"/>
+<circle cx="310" cy="250" r="110.8" fill="none" stroke="#F4F5F8" stroke-width="2.6"/>
+<circle cx="310" cy="250" r="98.2" fill="none" stroke="#B8323A" stroke-width="4.5"/>
+<circle cx="310" cy="250" r="80.7" fill="none" stroke="#141C4C" stroke-width="9"/>
+<circle cx="310" cy="250" r="64.7" fill="none" stroke="#F4F5F8" stroke-width="2.6"/>
+<circle cx="310" cy="250" r="52.1" fill="none" stroke="#3346A3" stroke-width="7"/>
+<circle cx="310" cy="250" r="32.1" fill="none" stroke="#B8323A" stroke-width="4.5"/>
+<circle cx="310" cy="250" r="20.6" fill="none" stroke="#E0A526" stroke-width="2.2"/>
+<circle cx="310" cy="250" r="8.4" fill="none" stroke="#F4F5F8" stroke-width="2.6"/>
+<circle cx="10" cy="290" r="120.0" fill="none" stroke="#F4F5F8" stroke-width="2.6"/>
+<circle cx="10" cy="290" r="107.4" fill="none" stroke="#B8323A" stroke-width="4.5"/>
+<circle cx="10" cy="290" r="89.9" fill="none" stroke="#141C4C" stroke-width="9"/>
+<circle cx="10" cy="290" r="73.9" fill="none" stroke="#F4F5F8" stroke-width="2.6"/>
+<circle cx="10" cy="290" r="61.3" fill="none" stroke="#3346A3" stroke-width="7"/>
+<circle cx="10" cy="290" r="41.3" fill="none" stroke="#B8323A" stroke-width="4.5"/>
+<circle cx="10" cy="290" r="29.8" fill="none" stroke="#E0A526" stroke-width="2.2"/>
+<circle cx="10" cy="290" r="17.6" fill="none" stroke="#F4F5F8" stroke-width="2.6"/>
+</g>
+</svg>

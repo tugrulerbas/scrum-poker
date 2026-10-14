@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 import type { RoomView } from '../../../shared/types.ts';
 import type { ActiveGif } from '../useGifs.ts';
 import Avatar from './Avatar.tsx';
+import CardBack from './CardBack.tsx';
 import GifOverlay from './GifOverlay.tsx';
 import Icon, { CardFace, type IconName } from './Icon.tsx';
 
@@ -38,15 +39,15 @@ export default function Table({ view, gifs, onGifDone, reducedMotion, gifSlot }:
               {revealed ? (
                 <span className={`seat-value${vote ? '' : ' none'}`}>{vote ? <CardFace card={vote} /> : '—'}</span>
               ) : p.hasVoted ? (
-                <span className="card-back">
+                <CardBack seed={p.id}>
                   <span className="sr-only">Oy verdi, değer gizli</span>
-                </span>
+                </CardBack>
               ) : (
                 <span className="card-slot" />
               )}
             </div>
             <div className="seat-who">
-              <Avatar name={p.name} size={32} />
+              <Avatar name={p.name} size={24} />
               <span className="seat-name" title={p.name}>
                 {p.name}
               </span>
@@ -59,10 +60,12 @@ export default function Table({ view, gifs, onGifDone, reducedMotion, gifSlot }:
                   <span className="badge-f-text">Owner</span>
                 </span>
               )}
-              {!revealed || !p.online ? <span className={`chip chip-${state}`}>
+              {(!revealed || !p.online) && (
+                <span className={`chip chip-${state}`}>
                   <Icon name={icon} size={14} />
                   {chip}
-                </span> : null}
+                </span>
+              )}
             </div>
           </li>
         );

@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState, type KeyboardEvent } from 'react';
 import type { Card, StoryView } from '../../../shared/types.ts';
 import type { Navigate } from '../App.tsx';
+import CardBack from '../components/CardBack.tsx';
 import { useConfirm } from '../components/ConfirmDialog.tsx';
 import ConnectionBanner, { useConnection } from '../components/ConnectionBanner.tsx';
 import Deck from '../components/Deck.tsx';
@@ -120,7 +121,12 @@ export default function Room({ roomId, navigate, justCreated }: Props) {
           </div>
         </header>
         <ConnectionBanner connection={connection} />
-        <main className="center-page">
+        <main className="center-page join">
+          <div className="home-deco" aria-hidden="true">
+            <CardBack seed="katil-sol" className="deco-card" />
+            <CardBack seed="katil-sag" className="deco-card" />
+            <CardBack seed="katil-orta" className="deco-card deco-mid" />
+          </div>
           <NameForm
             title="Odaya katıl"
             subtitle="Sadece adını yaz, gerisini biz hallederiz."
@@ -201,18 +207,20 @@ export default function Room({ roomId, navigate, justCreated }: Props) {
                   <GifSender cooldownUntil={gifs.cooldownUntil} playing={gifs.playing} offline={offline} reducedMotion={reducedMotion} onSend={gifs.send} />
                 }
               />
-              <VoteProgress view={view} />
-              {isF ? (
-                <FacilitatorControls
-                  view={view}
-                  disabled={offline}
-                  onReveal={() => act('round:reveal', { roundId })}
-                  onRevote={revote}
-                  onNext={() => act('story:next', {})}
-                />
-              ) : (
-                !revealed && <p className="muted hint">Owner kartları açınca sonuçlar görünür.</p>
-              )}
+              <div className="table-foot">
+                <VoteProgress view={view} />
+                {isF ? (
+                  <FacilitatorControls
+                    view={view}
+                    disabled={offline}
+                    onReveal={() => act('round:reveal', { roundId })}
+                    onRevote={revote}
+                    onNext={() => act('story:next', {})}
+                  />
+                ) : (
+                  !revealed && <p className="muted hint">Owner kartları açınca sonuçlar görünür.</p>
+                )}
+              </div>
               {revealed && <Results view={view} isFacilitator={isF} disabled={offline} onSave={savePoints} />}
               <Deck
                 selected={myVote}

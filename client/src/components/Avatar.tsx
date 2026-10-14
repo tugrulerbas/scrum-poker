@@ -1,6 +1,6 @@
 import { AVATAR_COLORS } from '../../../shared/constants.ts';
 
-function hash(s: string): number {
+export function hash(s: string): number {
   let h = 0;
   for (const ch of s) h = (h * 31 + ch.codePointAt(0)!) >>> 0;
   return h;

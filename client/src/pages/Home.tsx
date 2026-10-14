@@ -1,4 +1,5 @@
 import type { Navigate } from '../App.tsx';
+import CardBack from '../components/CardBack.tsx';
 import Logo from '../components/Logo.tsx';
 import NameForm from '../components/NameForm.tsx';
 import ThemeToggle from '../components/ThemeToggle.tsx';
@@ -32,11 +33,11 @@ export default function Home({ navigate }: { navigate: Navigate }) {
             }}
           />
           <div className="home-deco" aria-hidden="true">
-            {['5', '8', '?'].map((v) => (
-              <span key={v} className="deco-card" data-value={v}>
-                {v}
-              </span>
-            ))}
+            <CardBack seed="tekne-sol" className="deco-card" />
+            <CardBack seed="tekne-sag" className="deco-card" />
+            <span className="deco-card deco-face" data-value="8">
+              8
+            </span>
           </div>
         </div>
       </main>

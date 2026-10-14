@@ -48,6 +48,8 @@ Tüm tasarım ve front-end işleri [Impeccable](https://github.com/pbakaus/impec
 - Upstream'deki edit/stop hook'ları token tasarrufu için kurulu değil; detector front-end ve review aşamalarında elle çalıştırılır.
 - Güncelleme: `npx impeccable update` veya repo'dan `.claude/skills/impeccable` klasörünü yeniden kopyala.
 
+Görsel yön (estetik, tipografi, palet) için Anthropic'in **frontend-design** skill'i de kurulu (`.claude/skills/frontend-design/`, kaynak `UPSTREAM` dosyasında, Apache 2.0). Sıra: önce frontend-design ile yön/plan, sonra Impeccable ile craft + polish + detect.
+
 ## Kurallar (tüm agent'lar için)
 
 - **Test yok.** Bu aşamada test yazma, test çalıştırma, `*.test.js` dosyası oluşturma. Doğrulama için en fazla build komutu (Stack bölümü; yalnızca implement/frontend/revise sonunda, bir kez).
