@@ -1,3 +1,4 @@
+import './env.ts';
 import { createServer, type IncomingMessage, type ServerResponse } from 'node:http';
 import { fileURLToPath } from 'node:url';
 import { Server } from 'socket.io';

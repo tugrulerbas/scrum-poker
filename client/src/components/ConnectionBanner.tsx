@@ -46,7 +46,9 @@ export function useConnection() {
     socket.on('connect', onConnect);
     socket.on('disconnect', onDisconnect);
     // İlk yüklemede hiç bağlanamazsak da 15 sn sonra "Bağlanamadık" göster.
+    // Render ile effect arasında bağlanmışsak 'connect' kaçmıştır.
     if (!socket.connected) startWaiting();
+    else setState('ok');
     return () => {
       clearTimeout(timer);
       socket.off('connect', onConnect);
