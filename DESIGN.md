@@ -1,5 +1,5 @@
 ---
-name: Scrum Poker
+name: Mimeda Scrum Poker
 description: Hesapsız, tek linkle Planning Poker — sıcak bir kart masası.
 colors:
   primary: "#6C4DF5"
@@ -104,7 +104,7 @@ components:
     padding: "2px 8px"
 ---
 
-# Design System: Scrum Poker
+# Design System: Mimeda Scrum Poker
 
 ## Overview
 

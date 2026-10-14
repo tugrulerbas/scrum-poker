@@ -40,7 +40,7 @@ Jira eklentilerinden daha samimi ve eğlenceli (oyun kartı masası, sıcak ton,
 
 ## Brand Commitments
 
-- Ad: "Scrum Poker". Arayüz dili Türkçe, samimi "sen" hitabı.
+- Ad: "Mimeda Scrum Poker" (Mimeda ekibinin iç aracı; logo Mimeda logosu). Arayüz dili Türkçe, samimi "sen" hitabı.
 - Oyun kartı / masa metaforu ürünün kimliği (spec ve tasarım dokümanında yerleşik).
 
 ## Evidence on Hand
