@@ -45,7 +45,7 @@ export function useRoom(roomId: string) {
       setPendingVote((pv) => (pv && pv.roundId === v.round.id && v.you.vote !== pv.card ? pv : null));
     };
     const onNotice = (n: Notice) => {
-      if (n.code === 'FACILITATOR_CHANGED') toast(`Facilitator artık ${n.name}.`);
+      if (n.code === 'FACILITATOR_CHANGED') toast(`Owner artık ${n.name}.`);
       else if (n.code === 'ACTIVE_STORY_DELETED') toast('Aktif story silindi, oylar temizlendi.', 'warning');
     };
     socket.on('room:state', onState);

@@ -54,9 +54,9 @@ export default function Table({ view, gifs, onGifDone, reducedMotion, gifSlot }:
             </div>
             <div className="seat-meta">
               {isF && (
-                <span className="badge-f" title="Facilitator">
+                <span className="badge-f" title="Owner">
                   <Icon name="crown" size={14} />
-                  <span className="badge-f-text">Facilitator</span>
+                  <span className="badge-f-text">Owner</span>
                 </span>
               )}
               {!revealed || !p.online ? <span className={`chip chip-${state}`}>

@@ -211,7 +211,7 @@ export default function Room({ roomId, navigate, justCreated }: Props) {
                   onNext={() => act('story:next', {})}
                 />
               ) : (
-                !revealed && <p className="muted hint">Facilitator kartları açınca sonuçlar görünür.</p>
+                !revealed && <p className="muted hint">Owner kartları açınca sonuçlar görünür.</p>
               )}
               {revealed && <Results view={view} isFacilitator={isF} disabled={offline} onSave={savePoints} />}
               <Deck
