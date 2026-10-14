@@ -2,6 +2,7 @@ import type { Server, Socket } from 'socket.io';
 import {
   FACILITATOR_GRACE_MS,
   GIF_COOLDOWN_MS,
+  GIF_SHOW_MS,
   RATE_CREATE_MAX,
   RATE_GIF_ROOM_MAX,
   RATE_GIF_SEARCH_IP_MAX,
@@ -68,7 +69,8 @@ function clientIp(handshake: { address: string; headers: Record<string, string |
 
 const createLimit = createLimiter(RATE_CREATE_MAX, RATE_WINDOW_MS);
 const joinLimit = createLimiter(RATE_JOIN_MAX, RATE_WINDOW_MS);
-const gifUserLimit = createLimiter(1, GIF_COOLDOWN_MS);
+// İstemci beklemeyi GIF bitince başlatır; sunucu en kısa yolu (gösterim + bekleme) uygular.
+const gifUserLimit = createLimiter(1, GIF_SHOW_MS + GIF_COOLDOWN_MS);
 const gifRoomLimit = createLimiter(RATE_GIF_ROOM_MAX, RATE_WINDOW_MS);
 const gifSearchLimit = createLimiter(RATE_GIF_SEARCH_MAX, RATE_WINDOW_MS);
 const gifSearchIpLimit = createLimiter(RATE_GIF_SEARCH_IP_MAX, RATE_WINDOW_MS);

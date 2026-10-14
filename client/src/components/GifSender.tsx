@@ -3,13 +3,14 @@ import GifPanel from './GifPanel.tsx';
 
 interface Props {
   cooldownUntil: number;
+  playing: boolean;
   offline: boolean;
   reducedMotion: boolean;
   onSend: (id: string) => Promise<boolean>;
 }
 
 /** Kendi koltuktaki GIF butonu + panel. */
-export default function GifSender({ cooldownUntil, offline, reducedMotion, onSend }: Props) {
+export default function GifSender({ cooldownUntil, playing, offline, reducedMotion, onSend }: Props) {
   const [open, setOpen] = useState(false);
   const btnRef = useRef<HTMLButtonElement>(null);
   const cooling = cooldownUntil > 0;
@@ -27,7 +28,7 @@ export default function GifSender({ cooldownUntil, offline, reducedMotion, onSen
     if (restoreFocus) setTimeout(() => btnRef.current?.focus(), 0);
   }, []);
 
-  const blocked = cooling || offline;
+  const blocked = playing || cooling || offline;
   return (
     <>
       <button
@@ -38,7 +39,7 @@ export default function GifSender({ cooldownUntil, offline, reducedMotion, onSen
         aria-haspopup="dialog"
         aria-expanded={open}
         aria-disabled={blocked || undefined}
-        title={cooling ? `${left} sn sonra tekrar gönderebilirsin` : offline ? 'Bağlantı yok' : undefined}
+        title={playing ? 'GIF oynuyor' : cooling ? `${left} sn sonra tekrar gönderebilirsin` : offline ? 'Bağlantı yok' : undefined}
         onClick={() => {
           if (open) close();
           else if (!blocked) setOpen(true);

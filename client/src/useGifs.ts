@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useState } from 'react';
-import { GIF_COOLDOWN_MS } from '../../shared/constants.ts';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { GIF_COOLDOWN_MS, GIF_LOAD_TIMEOUT_MS, GIF_SHOW_MS } from '../../shared/constants.ts';
 import { isGiphyMediaUrl } from '../../shared/gif.ts';
 import type { GifEvent, RoomView } from '../../shared/types.ts';
 import { storage } from './identity.ts';
@@ -15,6 +15,12 @@ export function useGifs(view: RoomView | null) {
   const [active, setActive] = useState<Record<string, ActiveGif>>({});
   const [muted, setMutedState] = useState(() => storage.get(MUTE_KEY) === '1');
   const [cooldownUntil, setCooldownUntil] = useState(0);
+  // Kendi GIF'in oynarken true; bekleme süresi GIF bitince başlar.
+  const [playing, setPlaying] = useState(false);
+  const playingRef = useRef(false);
+  playingRef.current = playing;
+  const youId = useRef<string | null>(null);
+  youId.current = view?.you.id ?? null;
 
   useEffect(() => {
     if (muted) return;
@@ -46,6 +52,20 @@ export function useGifs(view: RoomView | null) {
     return () => clearTimeout(t);
   }, [cooldownUntil]);
 
+  const finishOwn = useCallback(() => {
+    if (!playingRef.current) return;
+    playingRef.current = false;
+    setPlaying(false);
+    setCooldownUntil(Date.now() + GIF_COOLDOWN_MS);
+  }, []);
+
+  // Kendi GIF'in gösterilmezse (gizli, sekme arkada, yüklenemedi) yine de beklemeye geç.
+  useEffect(() => {
+    if (!playing) return;
+    const t = setTimeout(finishOwn, muted ? GIF_SHOW_MS : GIF_LOAD_TIMEOUT_MS + GIF_SHOW_MS + 500);
+    return () => clearTimeout(t);
+  }, [playing, muted, finishOwn]);
+
   const setMuted = useCallback((m: boolean) => {
     storage.set(MUTE_KEY, m ? '1' : '0');
     setMutedState(m);
@@ -53,19 +73,21 @@ export function useGifs(view: RoomView | null) {
   }, []);
 
   const dismiss = useCallback((fromId: string, id: string) => {
+    if (fromId === youId.current) finishOwn();
     setActive((a) => {
       if (a[fromId]?.id !== id) return a;
       const { [fromId]: _, ...rest } = a;
       return rest;
     });
-  }, []);
+  }, [finishOwn]);
 
   const send = useCallback(
     async (id: string) => {
       const res = await call('gif:send', { id });
       if (res.ok) {
         toast('GIF gönderildi', 'success');
-        setCooldownUntil(Date.now() + GIF_COOLDOWN_MS);
+        playingRef.current = true;
+        setPlaying(true);
         return true;
       }
       if (res.error === 'RATE_LIMITED') {
@@ -78,5 +100,5 @@ export function useGifs(view: RoomView | null) {
     [toast],
   );
 
-  return { active, dismiss, muted, setMuted, send, cooldownUntil };
+  return { active, dismiss, muted, setMuted, send, cooldownUntil, playing };
 }

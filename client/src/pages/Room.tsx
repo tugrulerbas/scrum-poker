@@ -198,7 +198,7 @@ export default function Room({ roomId, navigate, justCreated }: Props) {
                 onGifDone={gifs.dismiss}
                 reducedMotion={reducedMotion}
                 gifSlot={
-                  <GifSender cooldownUntil={gifs.cooldownUntil} offline={offline} reducedMotion={reducedMotion} onSend={gifs.send} />
+                  <GifSender cooldownUntil={gifs.cooldownUntil} playing={gifs.playing} offline={offline} reducedMotion={reducedMotion} onSend={gifs.send} />
                 }
               />
               <VoteProgress view={view} />
