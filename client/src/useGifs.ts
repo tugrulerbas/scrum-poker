@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { GIF_COOLDOWN_MS } from '../../shared/constants.ts';
+import { isGiphyMediaUrl } from '../../shared/gif.ts';
 import type { GifEvent, RoomView } from '../../shared/types.ts';
 import { storage } from './identity.ts';
 import { call, socket } from './socket.ts';
@@ -18,7 +19,7 @@ export function useGifs(view: RoomView | null) {
   useEffect(() => {
     if (muted) return;
     const onGif = (g: GifEvent) => {
-      if (document.hidden) return;
+      if (document.hidden || !isGiphyMediaUrl(g.url)) return;
       setActive((a) => ({ ...a, [g.fromId]: { id: g.id, url: g.url } }));
     };
     const onVisibility = () => document.hidden && setActive({});
@@ -60,8 +61,8 @@ export function useGifs(view: RoomView | null) {
   }, []);
 
   const send = useCallback(
-    async (url: string) => {
-      const res = await call('gif:send', { url });
+    async (id: string) => {
+      const res = await call('gif:send', { id });
       if (res.ok) {
         toast('GIF gönderildi', 'success');
         setCooldownUntil(Date.now() + GIF_COOLDOWN_MS);
@@ -70,7 +71,7 @@ export function useGifs(view: RoomView | null) {
       if (res.error === 'RATE_LIMITED') {
         toast('Biraz bekle, sonra tekrar gönderebilirsin.', 'warning');
         setCooldownUntil(Date.now() + GIF_COOLDOWN_MS);
-      } else if (res.error === 'INVALID_INPUT') toast('Bu link kabul edilmedi.', 'warning');
+      } else if (res.error === 'INVALID_INPUT') toast('Bu GIF gönderilemedi, yeniden ara.', 'warning');
       else toast(GENERIC_ERROR, 'warning');
       return false;
     },

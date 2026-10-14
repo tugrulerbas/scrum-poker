@@ -3,6 +3,7 @@ import { fileURLToPath } from 'node:url';
 import { Server } from 'socket.io';
 import { SWEEP_INTERVAL_MS } from '../shared/constants.ts';
 import type { ClientToServerEvents, ServerToClientEvents, SocketData } from '../shared/types.ts';
+import { giphyEnabled } from './giphy.ts';
 import { broadcastRoom, registerHandlers } from './handlers.ts';
 import { sweep } from './rooms.ts';
 
@@ -30,6 +31,7 @@ const io = new Server<ClientToServerEvents, ServerToClientEvents, {}, SocketData
   destroyUpgrade: false,
 });
 registerHandlers(io);
+if (!giphyEnabled) console.warn('GIPHY_API_KEY tanımlı değil; GIF araması kapalı.');
 
 setInterval(() => {
   for (const room of sweep()) broadcastRoom(io, room);

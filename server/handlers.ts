@@ -4,11 +4,14 @@ import {
   GIF_COOLDOWN_MS,
   RATE_CREATE_MAX,
   RATE_GIF_ROOM_MAX,
+  RATE_GIF_SEARCH_IP_MAX,
+  RATE_GIF_SEARCH_MAX,
   RATE_JOIN_MAX,
   RATE_WINDOW_MS,
 } from '../shared/constants.ts';
-import { checkGifUrl } from '../shared/gif.ts';
+import { isGifId, isGiphyMediaUrl, normalizeQuery } from '../shared/gif.ts';
 import type { AckError, ClientToServerEvents, ErrorCode, ServerToClientEvents, SocketData } from '../shared/types.ts';
+import { giphyEnabled, resolveGif, searchGifs } from './giphy.ts';
 import * as logic from './room-logic.ts';
 import { rooms, roomsFull, type Participant, type Room } from './rooms.ts';
 import { createLimiter } from './rate-limit.ts';
@@ -67,6 +70,8 @@ const createLimit = createLimiter(RATE_CREATE_MAX, RATE_WINDOW_MS);
 const joinLimit = createLimiter(RATE_JOIN_MAX, RATE_WINDOW_MS);
 const gifUserLimit = createLimiter(1, GIF_COOLDOWN_MS);
 const gifRoomLimit = createLimiter(RATE_GIF_ROOM_MAX, RATE_WINDOW_MS);
+const gifSearchLimit = createLimiter(RATE_GIF_SEARCH_MAX, RATE_WINDOW_MS);
+const gifSearchIpLimit = createLimiter(RATE_GIF_SEARCH_IP_MAX, RATE_WINDOW_MS);
 let gifSeq = 0;
 
 export function registerHandlers(io: IO): void {
@@ -203,17 +208,41 @@ export function registerHandlers(io: IO): void {
 
     inRoom<{}>('story:next', (room, pid) => logic.nextStory(room, pid));
 
+    const member = (): { room: Room; pid: string } | null => {
+      const { roomId, participantId: pid } = socket.data;
+      const room = roomId ? rooms.get(roomId) : undefined;
+      return room && pid && room.participants.has(pid) ? { room, pid } : null;
+    };
+
+    socket.on('gif:search', async (payload: unknown, ack: unknown) => {
+      if (typeof ack !== 'function') return;
+      const reply = ack as AnyAck;
+      try {
+        const m = member();
+        if (!m) return reply(fail('NOT_IN_ROOM'));
+        const q = normalizeQuery(isObject(payload) ? payload.q : undefined);
+        if (q === null) return reply(fail('INVALID_INPUT'));
+        if (!giphyEnabled) return reply(fail('GIF_DISABLED'));
+        if (!gifSearchLimit(`${m.room.id}:${m.pid}`) || !gifSearchIpLimit(`ip:${ip}`)) return reply(fail('RATE_LIMITED'));
+        const items = await searchGifs(q, `ip:${ip}`);
+        reply(items === 'UNAVAILABLE' ? fail('GIF_UNAVAILABLE') : { ok: true, items });
+      } catch {
+        reply(fail('GIF_UNAVAILABLE'));
+      }
+    });
+
     // Geçici olay: state değişmez, room:state yayını yapılmaz.
     socket.on('gif:send', (payload: unknown, ack: unknown) => {
       if (typeof ack !== 'function') return;
       const reply = ack as AnyAck;
-      const { roomId, participantId: pid } = socket.data;
-      const room = roomId ? rooms.get(roomId) : undefined;
-      if (!room || !pid || !room.participants.has(pid)) return reply(fail('NOT_IN_ROOM'));
-      const check = checkGifUrl(isObject(payload) ? payload.url : undefined);
-      if (!check.ok) return reply(fail('INVALID_INPUT'));
+      const m = member();
+      if (!m) return reply(fail('NOT_IN_ROOM'));
+      const { room, pid } = m;
+      const id = isObject(payload) ? payload.id : undefined;
+      const url = isGifId(id) ? resolveGif(id) : null;
+      if (!url || !isGiphyMediaUrl(url)) return reply(fail('INVALID_INPUT'));
       if (!gifUserLimit(`${room.id}:${pid}`) || !gifRoomLimit(room.id)) return reply(fail('RATE_LIMITED'));
-      const gif = { id: String(++gifSeq), fromId: pid, url: check.url };
+      const gif = { id: String(++gifSeq), fromId: pid, url };
       for (const p of room.participants.values()) emitToParticipant(io, p, (s) => s.emit('gif', gif));
       reply({ ok: true });
     });

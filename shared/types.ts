@@ -49,6 +49,8 @@ export type ErrorCode =
   | 'INVALID_INPUT'
   | 'SERVER_BUSY'
   | 'RATE_LIMITED'
+  | 'GIF_DISABLED'
+  | 'GIF_UNAVAILABLE'
   | 'TIMEOUT';
 
 export type AckError = {
@@ -81,12 +83,22 @@ export interface ClientToServerEvents {
   'story:activate': (p: { storyId: string }, ack: AckFn) => void;
   'story:setPoints': (p: { storyId: string; card: Card }, ack: AckFn) => void;
   'story:next': (p: {}, ack: AckFn) => void;
-  'gif:send': (p: { url: string }, ack: AckFn) => void;
+  'gif:search': (p: { q: string }, ack: AckFn<{ items: GifItem[] }>) => void;
+  'gif:send': (p: { id: string }, ack: AckFn) => void;
 }
 
 export type Notice =
   | { code: 'ACTIVE_STORY_DELETED' }
   | { code: 'FACILITATOR_CHANGED'; facilitatorId: string; name: string };
+
+/** GIPHY sonucu; `preview`/`still` sunucuda doğrulanmış GIPHY medya URL'leri. */
+export interface GifItem {
+  id: string;
+  w: number;
+  h: number;
+  preview: string;
+  still: string;
+}
 
 export interface GifEvent {
   id: string;

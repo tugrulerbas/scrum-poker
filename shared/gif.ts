@@ -1,33 +1,26 @@
-import { GIF_URL_MAX } from './constants.ts';
+import { GIF_QUERY_MAX } from './constants.ts';
 
-export type GifUrlError = 'EMPTY' | 'TOO_LONG' | 'INVALID' | 'NOT_HTTPS' | 'CREDENTIALS' | 'PRIVATE_HOST';
-export type GifUrlCheck = { ok: true; url: string } | { ok: false; reason: GifUrlError };
+export const GIPHY_MEDIA_HOSTS = /^(media\d?|i)\.giphy\.com$/;
 
-const PRIVATE_SUFFIXES = ['.localhost', '.local', '.internal', '.lan', '.home.arpa'];
-
-/** GIF linki için istemci ve sunucunun ortak doğrulaması. */
-export function checkGifUrl(v: unknown): GifUrlCheck {
-  if (typeof v !== 'string' || !v.trim()) return { ok: false, reason: 'EMPTY' };
-  const raw = v.trim();
-  if (raw.length > GIF_URL_MAX) return { ok: false, reason: 'TOO_LONG' };
+/** Yalnızca GIPHY medya sunucularındaki https URL'leri. */
+export function isGiphyMediaUrl(v: unknown): v is string {
+  if (typeof v !== 'string' || v.length > 500) return false;
   let u: URL;
   try {
-    u = new URL(raw);
+    u = new URL(v);
   } catch {
-    return { ok: false, reason: 'INVALID' };
+    return false;
   }
-  if (u.protocol !== 'https:') return { ok: false, reason: 'NOT_HTTPS' };
-  if (u.username || u.password) return { ok: false, reason: 'CREDENTIALS' };
-  if (u.port !== '') return { ok: false, reason: 'INVALID' };
-  const host = u.hostname.toLowerCase().replace(/\.$/, '');
-  if (
-    /^\d+(\.\d+){3}$/.test(host) ||
-    host.startsWith('[') ||
-    host === 'localhost' ||
-    !host.includes('.') ||
-    PRIVATE_SUFFIXES.some((s) => host.endsWith(s))
-  )
-    return { ok: false, reason: 'PRIVATE_HOST' };
-  if (u.href.length > GIF_URL_MAX) return { ok: false, reason: 'TOO_LONG' };
-  return { ok: true, url: u.href };
+  return u.protocol === 'https:' && u.port === '' && !u.username && !u.password && GIPHY_MEDIA_HOSTS.test(u.hostname);
+}
+
+export function isGifId(v: unknown): v is string {
+  return typeof v === 'string' && /^[A-Za-z0-9]{1,40}$/.test(v);
+}
+
+/** Arama metnini sadeleştirir; geçersiz/çok uzunsa null. Boş metin = trend. */
+export function normalizeQuery(v: unknown): string | null {
+  if (typeof v !== 'string') return null;
+  const q = v.trim().replace(/\s+/g, ' ');
+  return q.length > GIF_QUERY_MAX ? null : q;
 }

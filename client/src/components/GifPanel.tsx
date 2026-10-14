@@ -1,42 +1,34 @@
 import { useEffect, useId, useLayoutEffect, useRef, useState, type KeyboardEvent, type RefObject } from 'react';
 import { createPortal } from 'react-dom';
-import { GIF_URL_MAX } from '../../../shared/constants.ts';
-import { checkGifUrl, type GifUrlError } from '../../../shared/gif.ts';
+import { GIF_QUERY_MAX } from '../../../shared/constants.ts';
+import type { GifItem } from '../../../shared/types.ts';
+import { useGifSearch } from '../useGifSearch.ts';
 import { useMediaQuery } from '../useMediaQuery.ts';
+import GifGrid from './GifGrid.tsx';
 import Icon from './Icon.tsx';
 
-const ERRORS: Record<Exclude<GifUrlError, 'EMPTY'>, string> = {
-  TOO_LONG: `Link en fazla ${GIF_URL_MAX} karakter olabilir.`,
-  INVALID: 'Geçerli bir link değil.',
-  NOT_HTTPS: 'Yalnızca https:// ile başlayan linkler kabul edilir.',
-  CREDENTIALS: 'Kullanıcı adı/şifre içeren linkler kabul edilmez.',
-  PRIVATE_HOST: 'Yerel ağ veya IP adresi linkleri kabul edilmez.',
-};
-const PREVIEW_ERROR = "Bu link bir görsel açmadı. GIF'in doğrudan linkini kopyala (sayfa linki değil).";
-
-type Preview = 'idle' | 'loading' | 'loaded' | 'error';
 const FOCUSABLE = 'button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])';
 const EDGE = 16;
+const SKELETONS = 9;
 
 interface Props {
   cooldownUntil: number;
   disabled: boolean;
   reducedMotion: boolean;
   triggerRef: RefObject<HTMLElement | null>;
-  onSend: (url: string) => Promise<boolean>;
+  onSend: (id: string) => Promise<boolean>;
   onClose: (restoreFocus?: boolean) => void;
 }
 
 export default function GifPanel({ cooldownUntil, disabled, reducedMotion, triggerRef, onSend, onClose }: Props) {
-  const [url, setUrl] = useState('');
-  const [checked, setChecked] = useState('');
-  const [preview, setPreview] = useState<Preview>('idle');
+  const { query, normalized, setQuery, status, items, searched, retry } = useGifSearch();
+  const [selected, setSelected] = useState<GifItem | null>(null);
   const [sending, setSending] = useState(false);
   const [now, setNow] = useState(Date.now);
   const panelRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const titleId = useId();
-  const errId = useId();
+  const gridWrapRef = useRef<HTMLDivElement>(null);
   const sheet = useMediaQuery('(max-width: 767px)');
   const [shift, setShift] = useState({ x: 0, up: false });
 
@@ -54,7 +46,6 @@ export default function GifPanel({ cooldownUntil, disabled, reducedMotion, trigg
   }, [sheet]);
 
   useEffect(() => {
-    inputRef.current?.focus();
     const onDown = (e: PointerEvent) => {
       const t = e.target as Node;
       if (!panelRef.current?.contains(t) && !triggerRef.current?.contains(t)) onClose(false);
@@ -63,17 +54,15 @@ export default function GifPanel({ cooldownUntil, disabled, reducedMotion, trigg
     return () => document.removeEventListener('pointerdown', onDown);
   }, [onClose, triggerRef]);
 
+  const off = status === 'disabled';
   useEffect(() => {
-    const t = setTimeout(() => setChecked(url), 300);
-    return () => clearTimeout(t);
-  }, [url]);
+    // Arama kapanınca input disabled olur ve odak body'ye düşer; odağı panele al.
+    if (off) panelRef.current?.focus();
+    else inputRef.current?.focus();
+  }, [off]);
 
-  const check = checkGifUrl(checked);
-  const previewUrl = check.ok ? check.url : '';
-
-  useEffect(() => {
-    setPreview(previewUrl ? 'loading' : 'idle');
-  }, [previewUrl]);
+  useEffect(() => setSelected(null), [normalized]);
+  useEffect(() => setSelected((s) => (s && items.some((g) => g.id === s.id) ? s : null)), [items]);
 
   const cooldownLeft = Math.max(0, Math.ceil((cooldownUntil - now) / 1000));
   useEffect(() => {
@@ -83,9 +72,12 @@ export default function GifPanel({ cooldownUntil, disabled, reducedMotion, trigg
     return () => clearInterval(i);
   }, [cooldownUntil]);
 
-  const stale = checked !== url;
-  const error = !stale && !check.ok && check.reason !== 'EMPTY' ? ERRORS[check.reason] : preview === 'error' ? PREVIEW_ERROR : '';
-  const canSend = !stale && check.ok && preview === 'loaded' && cooldownLeft === 0 && !disabled && !sending;
+  const canSend = !!selected && cooldownLeft === 0 && !disabled && !sending;
+  const short = searched.length > 20 ? searched.slice(0, 20) + '…' : searched;
+
+  function focusGrid() {
+    gridWrapRef.current?.querySelector<HTMLElement>('[role="option"][tabindex="0"]')?.focus();
+  }
 
   function onKey(e: KeyboardEvent<HTMLDivElement>) {
     if (e.key === 'Escape') {
@@ -109,9 +101,9 @@ export default function GifPanel({ cooldownUntil, disabled, reducedMotion, trigg
   }
 
   async function submit() {
-    if (!canSend || !check.ok) return;
+    if (!canSend || !selected) return;
     setSending(true);
-    const ok = await onSend(check.url);
+    const ok = await onSend(selected.id);
     setSending(false);
     if (ok) onClose();
   }
@@ -142,71 +134,106 @@ export default function GifPanel({ cooldownUntil, disabled, reducedMotion, trigg
           Bağlantı yok, GIF gönderemezsin.
         </p>
       )}
-      <form
-        className="gif-form"
-        onSubmit={(e) => {
-          e.preventDefault();
-          submit();
-        }}
-      >
-        <div className="field">
-          <label htmlFor={`${titleId}-url`} className="sr-only">
-            GIF linki
-          </label>
-          <input
-            ref={inputRef}
-            id={`${titleId}-url`}
-            className="input"
-            type="url"
-            inputMode="url"
-            autoComplete="off"
-            spellCheck={false}
-            placeholder="https://…/ornek.gif"
-            value={url}
-            aria-invalid={!!error || undefined}
-            aria-describedby={error ? errId : undefined}
-            onChange={(e) => setUrl(e.target.value)}
-          />
-          <p id={errId} className="field-error gif-error" role="status">
-            {error && <Icon name="alert" size={14} />}
-            {error}
-          </p>
-        </div>
-        <div className={`gif-preview is-${preview}`}>
-          {previewUrl && (
-            <img
-              key={previewUrl}
-              src={previewUrl}
-              alt=""
-              referrerPolicy="no-referrer"
-              decoding="async"
-              hidden={reducedMotion || preview !== 'loaded'}
-              onLoad={() => setPreview('loaded')}
-              onError={() => setPreview('error')}
-            />
-          )}
-          {preview === 'idle' && <span>Önizleme burada görünecek</span>}
-          {preview === 'loading' && <span>Yükleniyor…</span>}
-          {preview === 'error' && <Icon name="image-off" size={28} />}
-          {preview === 'loaded' && reducedMotion && (
-            <span className="gif-preview-msg">
-              <Icon name="check" size={20} />
-              Link geçerli, görsel yüklendi
-            </span>
-          )}
-        </div>
-        {cooldownLeft > 0 && (
-          <p className="gif-chip gif-chip-cooldown">
-            <Icon name="clock" size={14} />
-            {cooldownLeft} sn sonra tekrar gönderebilirsin
-          </p>
+      {cooldownLeft > 0 && (
+        <p className="gif-chip gif-chip-cooldown">
+          <Icon name="clock" size={14} />
+          {cooldownLeft} sn sonra tekrar gönderebilirsin
+        </p>
+      )}
+      <div className="gif-search">
+        <Icon name="search" size={20} />
+        <input
+          ref={inputRef}
+          className="input"
+          type="search"
+          aria-label="GIF ara"
+          autoComplete="off"
+          spellCheck={false}
+          maxLength={GIF_QUERY_MAX}
+          placeholder={off ? 'Arama kapalı' : "GIPHY'de ara"}
+          disabled={off}
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === 'ArrowDown' || e.key === 'Enter') {
+              e.preventDefault();
+              focusGrid();
+            }
+          }}
+        />
+        {query && !off && (
+          <button
+            type="button"
+            className="btn btn-ghost btn-icon btn-sm gif-search-clear"
+            aria-label="Aramayı temizle"
+            onClick={() => {
+              setQuery('');
+              inputRef.current?.focus();
+            }}
+          >
+            <Icon name="x" size={16} />
+          </button>
         )}
-        <p className="muted gif-note">GIF senin kartında herkese oynar.</p>
-        <button type="submit" className="btn btn-primary gif-submit" disabled={!canSend}>
-          {sending ? 'Gönderiliyor…' : 'Gönder'}
-        </button>
-        <p className="muted gif-note">GIF, linkin bulunduğu siteden yüklenir; bu site izleyenlerin IP adresini görebilir.</p>
-      </form>
+      </div>
+      {!off && <p className="muted gif-label-row">{query.trim() ? 'Sonuçlar' : "Trend GIF'ler"}</p>}
+      <div ref={gridWrapRef} className="gif-results">
+        {status === 'loading' && items.length > 0 &&
+          (reducedMotion ? (
+            <p className="gif-loading-text" aria-hidden="true">
+              Yükleniyor…
+            </p>
+          ) : (
+            <div className="gif-loading-bar" aria-hidden="true" />
+          ))}
+        {status === 'loading' && !items.length && (
+          <div className="gif-grid" aria-hidden="true">
+            {Array.from({ length: SKELETONS }, (_, i) => (
+              <span key={i} className="gif-tile gif-skeleton" />
+            ))}
+          </div>
+        )}
+        {items.length > 0 && (status === 'ready' || status === 'loading') && (
+          <GifGrid
+            items={items}
+            selectedId={selected?.id ?? null}
+            reducedMotion={reducedMotion}
+            dim={status === 'loading'}
+            onToggle={(g) => setSelected((s) => (s?.id === g.id ? null : g))}
+          />
+        )}
+        <div className="gif-status" role="status" aria-live="polite">
+          {status === 'loading' && <span className="sr-only">Yükleniyor…</span>}
+          {status === 'empty' && (
+            <>
+              <Icon name="search" size={24} />
+              <p>{searched ? `“${short}” için sonuç bulunamadı. Başka bir kelime dene.` : 'Şu an trend GIF yok.'}</p>
+            </>
+          )}
+          {(status === 'error' || status === 'limited') && (
+            <>
+              <Icon name="alert" size={24} className="gif-status-alert" />
+              <p>{status === 'error' ? "GIF'ler yüklenemedi." : 'Çok hızlı arıyorsun, biraz bekle.'}</p>
+              <button type="button" className="btn btn-secondary" onClick={retry}>
+                Tekrar dene
+              </button>
+            </>
+          )}
+          {off && (
+            <>
+              <Icon name="info" size={24} />
+              <p>GIF araması şu an kullanılamıyor.</p>
+            </>
+          )}
+        </div>
+      </div>
+      <p className="muted gif-note">GIF senin kartında herkese oynar.</p>
+      <button type="button" className="btn btn-primary gif-submit" disabled={!canSend} onClick={submit}>
+        {sending ? 'Gönderiliyor…' : 'Gönder'}
+      </button>
+      <div className="gif-attribution">
+        <strong>Powered by GIPHY</strong>
+        <span className="muted">GIF'ler GIPHY'den yüklenir.</span>
+      </div>
     </div>
   );
 

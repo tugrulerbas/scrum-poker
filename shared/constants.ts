@@ -15,11 +15,15 @@ export const RATE_WINDOW_MS = 60 * 1000;
 export const RATE_CREATE_MAX = 5;
 export const RATE_JOIN_MAX = 10;
 export const RATE_GIF_ROOM_MAX = 10;
+export const RATE_GIF_SEARCH_MAX = 30;
+export const RATE_GIF_SEARCH_IP_MAX = 60;
 
-export const GIF_URL_MAX = 500;
 export const GIF_SHOW_MS = 4000;
 export const GIF_LOAD_TIMEOUT_MS = 5000;
 export const GIF_COOLDOWN_MS = 10_000;
+export const GIF_QUERY_MAX = 50;
+export const GIF_RESULTS = 24;
+export const GIF_SEARCH_DEBOUNCE_MS = 350;
 
 export const NAME_MAX = 24;
 export const MAX_STORIES = 200;

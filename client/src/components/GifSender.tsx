@@ -5,7 +5,7 @@ interface Props {
   cooldownUntil: number;
   offline: boolean;
   reducedMotion: boolean;
-  onSend: (url: string) => Promise<boolean>;
+  onSend: (id: string) => Promise<boolean>;
 }
 
 /** Kendi koltuktaki GIF butonu + panel. */

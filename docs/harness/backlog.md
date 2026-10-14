@@ -14,6 +14,7 @@
 | coffee-break-card | Deste içinde kahve molası kartı, tüm oda moladaysa mola ekranı | O | S | analyzed |
 | vote-timer-nudge | Oylama zamanlayıcısı ve oy vermeyeni dürtme | O | M | analyzed |
 | gif-send | GIF linki gönder, gönderenin kendi kartında herkese kısa süre oynat | O | M | done |
+| gif-search | GIF seçimini link yapıştırma yerine GIPHY aramasıyla yap (trend, ızgara, atıf) | O | M | done |
 | scrum-poker-v1 | Birleşik spec: yukarıdaki 11 feature'ı kapsar (5 MVP + 6 eğlenceli) | Y | L | done |
 
 ## Gerekçeler
